@@ -1,0 +1,22 @@
+
+Œ	java:S117"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(¤ÊŸ¢J$5cc8c399-e9a6-4559-843c-2dfe4517c311
+Œ	java:S117"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(¤ÊŸ¢J$0b9e6f26-97d2-4bf9-8865-5b7057291b26
+Œ	java:S117"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(¤ÊŸ¢J$b4b605eb-74ac-4fb0-a15b-69e1d48757d9
+‹	java:S117""QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(²ã«(J$fdb545db-399a-479b-844d-b02990cb5fd9
+‹	java:S117."QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ÚÑ­HJ$3da2ea43-8db5-42b2-89df-141d0cfa852a
+Œ	java:S1179"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(³…ïâJ$b41d24d3-7c8d-4fdc-8cee-e475ee72dbeb
+Œ	java:S117S"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(°™¤J$8fbe0eff-39ad-432b-bed3-a3ccac9e1b20
+’	java:S117›"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ÎÙåÿÿÿÿÿJ$aee8ee32-4f69-4a4b-a4b8-83b1893ee380
+	java:S117£"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ëıÜÁJ$d14ba2dc-5faa-442d-9869-be83b4a187cc
+	java:S116"TRename this field "full_name" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(®š¬ÍJ$173081ed-bd13-44cb-98b9-5feebb18206e
+•	java:S116"URename this field "created_at" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(±“¡ıüÿÿÿÿJ$f23b27f9-25f6-4ad8-bb48-d3ac8ba12b65
+	java:S116"URename this field "updated_at" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ğüıJ$b6d4265d-998e-4098-96a9-3f6c59786c4c
+}	java:S107"BConstructor has 11 parameters, which is greater than 7 authorized.(¤ÊŸ¢J$b7b10524-eadd-4ffc-b289-e72da575ea15
+{	java:S107""AConstructor has 9 parameters, which is greater than 7 authorized.(²ã«(J$19b0b117-b388-4a5d-9e85-294373b8a26c
+{	java:S107."AConstructor has 8 parameters, which is greater than 7 authorized.(ÚÑ­HJ$c24ae3b6-7acd-492e-8e24-dd4857e9bd88
+	java:S100O"NRename this method name to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(´Î¸ñÿÿÿÿÿJ$a4696673-abdc-490d-bf02-624af00165d9
+‰	java:S100S"NRename this method name to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(°™¤J$6b93a165-0116-442b-b281-cbdca117154c
+	java:S100—"NRename this method name to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(®£˜ÙøÿÿÿÿJ$6631188d-de9b-47b5-b92e-91109da97696
+	java:S100›"NRename this method name to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ÎÙåÿÿÿÿÿJ$6f2f5647-ef38-4421-a994-0a2c9c719ef7
+Š	java:S100Ÿ"NRename this method name to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(£ñ©®J$a4490b73-9a00-4232-9c22-f51655a63567
+Š	java:S100£"NRename this method name to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ëıÜÁJ$6b73c2ca-cee1-40f0-a5b6-3fca24dc8f12

@@ -1,0 +1,12 @@
+
+:
+java:S6905]"Don't use the query "SELECT *".(à¥§»ÿÿÿÿÿ
+X
+java:S1128"BRemove this unused import 'com.ews.web_seller_test.model.Product'.(‚ œè
+^
+java:S1128"HRemove this unused import 'com.ews.web_seller_test.service.UserService'.(›³„Ä
+g
+java:S1128
+"QRemove this unused import 'com.ews.web_seller_test.service.impl.UserServiceImpl'.(ŸæŽ 
+R
+java:S1128"7Remove this unused import 'java.sql.PreparedStatement'.(òÄ™ƒÿÿÿÿÿ
