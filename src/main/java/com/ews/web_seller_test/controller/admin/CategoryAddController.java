@@ -28,16 +28,23 @@ public class CategoryAddController extends HttpServlet {
         HttpSession session = req.getSession();
         Object obj=session.getAttribute("account");
         User user=(User) obj;
-        if(user.getRole().getId() == 2) {
-            req.getRequestDispatcher("/views/user/index.jsp").forward(req, resp);
-        }
         req.setAttribute("username", user.getUsername());
 
-        List<Product> productList = productService.getAllProduct();
-        List<User> userList = userService.getAllUser();
-        List<Category> categoryList = cateService.getAllCategory();
-        List<Order_Details> orderDetailsList = orderDetailsService.getAllOrder_Details();
-        req.getRequestDispatcher("/views/admin/view/add-category.jsp").forward(req, resp);
+        if(user.getRole().getId() == 2) {
+            req.getRequestDispatcher("/views/user/index.jsp").forward(req, resp);
+            return;
+        }
+
+        if(user.getRole().getId() == 1) {
+            List<Product> productList = productService.getAllProduct();
+            List<User> userList = userService.getAllUser();
+            List<Category> categoryList = cateService.getAllCategory();
+            List<Order_Details> orderDetailsList = orderDetailsService.getAllOrder_Details();
+            req.getRequestDispatcher("/views/admin/view/add-category.jsp").forward(req, resp);
+            return;
+        }
+
+        req.getRequestDispatcher("/views/user/error404.jsp").forward(req, resp);
     }
 
     @Override

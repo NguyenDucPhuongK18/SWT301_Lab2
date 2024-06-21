@@ -10,8 +10,8 @@ import java.util.List;
 public class CategoryServiceImpl implements CategoryService {
     CategoryDao categoryDao = new CategoryDaoImpl();
     @Override
-    public void insertCategory(Category category) {
-        categoryDao.insertCategory(category);
+    public boolean insertCategory(Category category) {
+        return categoryDao.insertCategory(category);
     }
 
     @Override

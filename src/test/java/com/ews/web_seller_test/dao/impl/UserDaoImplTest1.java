@@ -15,5 +15,6 @@ class UserDaoImplTest1 {
         var allUser = userDao.getAllUser();
         assertNotNull(allUser);
         assertEquals(1, allUser.size());
+
     }
 }

@@ -5,7 +5,7 @@ import com.ews.web_seller_test.model.Category;
 import java.util.List;
 
 public interface CategoryService {
-    void insertCategory(Category category);
+    boolean insertCategory(Category category);
 
     void editCategory(Category category);
 
