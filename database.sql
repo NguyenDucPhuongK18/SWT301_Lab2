@@ -78,8 +78,8 @@ CREATE TABLE Rating (
     content VARCHAR(255) NOT NULL,
     product_id INT NOT NULL,
     user_id INT NOT NULL,
-    updated_id DATETIME,
-    created_id DATETIME,
+    updated_at DATETIME,
+    created_at DATETIME,
     number_starts INT NOT NULL
 );
 
