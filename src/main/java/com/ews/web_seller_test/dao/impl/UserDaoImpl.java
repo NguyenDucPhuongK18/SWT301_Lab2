@@ -113,7 +113,7 @@ public class UserDaoImpl extends MyDAO implements UserDao {
 
     @Override
     public User getUser(int id) {
-        xSql = "SELECT * FROM [User] WHERE id = ?";
+        xSql = "SELECT * FROM `User` WHERE id = ?";
         try {
             ps = con.prepareStatement(xSql);
             ps.setInt(1, id);

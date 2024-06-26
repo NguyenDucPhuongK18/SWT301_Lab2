@@ -2,20 +2,16 @@ package com.ews.web_seller_test.dao.impl;
 
 import com.ews.web_seller_test.dao.MyDAO;
 import com.ews.web_seller_test.dao.RatingDao;
-import com.ews.web_seller_test.model.Product;
 import com.ews.web_seller_test.model.Rating;
-import com.ews.web_seller_test.service.RatingService;
-import com.ews.web_seller_test.service.UserService;
-import com.ews.web_seller_test.service.impl.RatingServiceImpl;
-import com.ews.web_seller_test.service.impl.UserServiceImpl;
 
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class RatingDaoImpl extends MyDAO implements RatingDao {
-
+    private static final Logger LOGGER = Logger.getLogger(RatingDaoImpl.class.getName());
     @Override
     public void insertRating(Rating rating) {
         xSql = "INSERT INTO Rating (content, product_id, user_id, number_starts) VALUES (?, ?, ?, ?)";
@@ -28,7 +24,7 @@ public class RatingDaoImpl extends MyDAO implements RatingDao {
             ps.executeUpdate();
             ps.close();
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "SQLException occurred while inserting rating", e);
         }
     }
 
@@ -43,7 +39,7 @@ public class RatingDaoImpl extends MyDAO implements RatingDao {
             ps.executeUpdate();
             ps.close();
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "SQLException occurred while editing rating", e);
         }
     }
 
@@ -56,7 +52,7 @@ public class RatingDaoImpl extends MyDAO implements RatingDao {
             ps.executeUpdate();
             ps.close();
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "SQLException occurred while deleting rating", e);
         }
     }
 
@@ -81,7 +77,7 @@ public class RatingDaoImpl extends MyDAO implements RatingDao {
             rs.close();
             ps.close();
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "SQLException occurred while getting rating", e);
         }
         return rating;
     }
@@ -107,9 +103,8 @@ public class RatingDaoImpl extends MyDAO implements RatingDao {
             rs.close();
             ps.close();
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "SQLException occurred while getting all ratings", e);
         }
         return ratings;
     }
-
 }

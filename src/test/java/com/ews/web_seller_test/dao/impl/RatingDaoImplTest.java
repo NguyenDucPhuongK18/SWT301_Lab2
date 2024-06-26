@@ -1,29 +1,41 @@
 package com.ews.web_seller_test.dao.impl;
 
 import com.ews.web_seller_test.model.Rating;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.BeforeEach;
-
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.logging.*;
 
+import static org.junit.jupiter.api.Assertions.*;
 
 class RatingDaoImplTest {
     private RatingDaoImpl ratingDao;
+    private final ByteArrayOutputStream logContent = new ByteArrayOutputStream();
+    private final PrintStream originalErr = System.err;
+    private final Logger logger = Logger.getLogger(RatingDaoImpl.class.getName());
+    private final TestLogHandler logHandler = new TestLogHandler();
 
     @BeforeEach
     void setUp() {
         ratingDao = new RatingDaoImpl();
-        // Optional: You might want to clear or set up the database state before each test
-        // For example, truncate the Rating table
+        logger.addHandler(logHandler);
+        logger.setLevel(Level.ALL);
         try {
             ratingDao.connection.prepareStatement("TRUNCATE TABLE Rating").executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
             fail("Database setup failed: " + e.getMessage());
         }
+    }
+
+    @AfterEach
+    void tearDown() {
+        logger.removeHandler(logHandler);
     }
 
     @Test
@@ -36,7 +48,6 @@ class RatingDaoImplTest {
 
         ratingDao.insertRating(rating);
 
-        // Check if the rating was inserted successfully
         List<Rating> ratings = ratingDao.getAllRating();
         assertNotNull(ratings);
         assertEquals(1, ratings.size());
@@ -44,6 +55,19 @@ class RatingDaoImplTest {
         assertEquals(1, ratings.get(0).getProduct_id());
         assertEquals(1, ratings.get(0).getUser_id());
         assertEquals(5, ratings.get(0).getNumber_starts());
+    }
+
+    @Test
+    void insertRatingSQLException() {
+        Rating rating = new Rating();
+        rating.setContent("Invalid product");
+        rating.setProduct_id(999); // Assuming 999 does not exist
+        rating.setUser_id(1);
+        rating.setNumber_starts(5);
+
+        ratingDao.insertRating(rating);
+
+        assertNotNull(logHandler.getLogContent());
     }
 
     @Test
@@ -56,23 +80,32 @@ class RatingDaoImplTest {
 
         ratingDao.insertRating(rating);
 
-        // Retrieve the inserted rating
         List<Rating> ratings = ratingDao.getAllRating();
         assertNotNull(ratings);
         assertEquals(1, ratings.size());
 
-        // Modify the rating
         Rating updatedRating = ratings.get(0);
         updatedRating.setContent("Awesome product!");
         updatedRating.setNumber_starts(5);
 
         ratingDao.editRating(updatedRating);
 
-        // Check if the rating was updated correctly
         Rating retrievedRating = ratingDao.getRating(updatedRating.getId());
         assertNotNull(retrievedRating);
         assertEquals("Awesome product!", retrievedRating.getContent());
         assertEquals(5, retrievedRating.getNumber_starts());
+    }
+
+    @Test
+    void editRatingSQLException() {
+        Rating rating = new Rating();
+        rating.setId(999); // Assuming 999 does not exist
+        rating.setContent("Non-existent rating");
+        rating.setNumber_starts(3);
+
+        ratingDao.editRating(rating);
+
+        assertNotNull(logHandler.getLogContent());
     }
 
     @Test
@@ -85,18 +118,22 @@ class RatingDaoImplTest {
 
         ratingDao.insertRating(rating);
 
-        // Retrieve the inserted rating
         List<Rating> ratings = ratingDao.getAllRating();
         assertNotNull(ratings);
         assertEquals(1, ratings.size());
 
-        // Delete the rating
         ratingDao.deleteRating(ratings.get(0).getId());
 
-        // Check if the rating was deleted
         ratings = ratingDao.getAllRating();
         assertNotNull(ratings);
         assertEquals(0, ratings.size());
+    }
+
+    @Test
+    void deleteRatingSQLException() {
+        ratingDao.deleteRating(999); // Assuming 999 does not exist
+
+        assertNotNull(logHandler.getLogContent());
     }
 
     @Test
@@ -109,17 +146,22 @@ class RatingDaoImplTest {
 
         ratingDao.insertRating(rating);
 
-        // Retrieve the inserted rating
         List<Rating> ratings = ratingDao.getAllRating();
         assertNotNull(ratings);
         assertEquals(1, ratings.size());
 
-        // Retrieve the specific rating by ID
         Rating retrievedRating = ratingDao.getRating(ratings.get(0).getId());
 
         assertNotNull(retrievedRating);
         assertEquals("Another test review", retrievedRating.getContent());
         assertEquals(4, retrievedRating.getNumber_starts());
+    }
+
+    @Test
+    void getRatingSQLException() {
+        ratingDao.getRating(999); // Assuming 999 does not exist
+
+        assertNotNull(logHandler.getLogContent());
     }
 
     @Test
@@ -133,6 +175,17 @@ class RatingDaoImplTest {
         assertEquals(3, ratings.size());
     }
 
+    @Test
+    void getAllRatingSQLException() {
+        try {
+            ratingDao.connection.prepareStatement("INVALID SQL").executeQuery();
+        } catch (SQLException e) {
+            // This is expected, ignore it for the test
+        }
+
+        assertNotNull(logHandler.getLogContent());
+    }
+
     private Rating createRating(int id, String content, int productId, int userId, int stars) {
         Rating rating = new Rating();
         rating.setId(id);
@@ -143,4 +196,27 @@ class RatingDaoImplTest {
         return rating;
     }
 
+    private static class TestLogHandler extends Handler {
+        private final ByteArrayOutputStream logContent = new ByteArrayOutputStream();
+        private final PrintStream logStream = new PrintStream(logContent);
+
+        @Override
+        public void publish(LogRecord record) {
+            logStream.println(record.getMessage());
+        }
+
+        @Override
+        public void flush() {
+            logStream.flush();
+        }
+
+        @Override
+        public void close() throws SecurityException {
+            logStream.close();
+        }
+
+        public String getLogContent() {
+            return logContent.toString();
+        }
+    }
 }

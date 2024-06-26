@@ -2,6 +2,7 @@ package com.ews.web_seller_test.model;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.StringJoiner;
 
 public class Order implements Serializable {
     private int id;
@@ -128,5 +129,23 @@ public class Order implements Serializable {
 
     public void setUpdated_at(Date updated_at) {
         this.updated_at = updated_at;
+    }
+
+    @Override
+    public String toString() {
+        return new StringJoiner(", ", Order.class.getSimpleName() + "[", "]")
+                .add("id=" + id)
+                .add("buyer=" + buyer)
+                .add("price=" + price)
+                .add("phone='" + phone + "'")
+                .add("address='" + address + "'")
+                .add("note='" + note + "'")
+                .add("status=" + status)
+                .add("total_discount=" + total_discount)
+                .add("total_quantity=" + total_quantity)
+                .add("total_price=" + total_price)
+                .add("created_at=" + created_at)
+                .add("updated_at=" + updated_at)
+                .toString();
     }
 }

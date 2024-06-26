@@ -73,7 +73,7 @@ CREATE TABLE `User` (
     `updated_at` DATETIME DEFAULT NULL
 );
 
-CREATE TABLE Rating (
+CREATE TABLE `Rating` (
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     content VARCHAR(255) NOT NULL,
     product_id INT NOT NULL,
