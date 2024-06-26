@@ -8,6 +8,10 @@ import java.util.Properties;
 public class SendMail {
 
     public static boolean sendMail(String to, String subject, String text) {
+        if (to == null || to.isEmpty()) {
+            return false; // or handle the case as needed
+        }
+
         final String from = "trongwilson2k3@gmail.com";
         final String password = "zchhntmkzvxduuls";
 

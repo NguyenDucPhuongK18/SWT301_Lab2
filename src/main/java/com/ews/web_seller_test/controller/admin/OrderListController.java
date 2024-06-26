@@ -28,21 +28,26 @@ public class OrderListController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         HttpSession session = req.getSession();
-        Object obj=session.getAttribute("account");
-        User user=(User) obj;
-        if(user.getRole().getId() == 2) {
-            req.getRequestDispatcher("/views/user/index.jsp").forward(req, resp);
+        User user = (User) session.getAttribute("account");
+
+        if (user == null) {
+            resp.sendRedirect(req.getContextPath() + "/login"); // Redirect if user not logged in
+            return;
         }
+
+        if (user.getRole().getId() == 2) {
+            req.getRequestDispatcher("/views/user/index.jsp").forward(req, resp);
+            return; // Exit method after forwarding
+        }
+
         req.setAttribute("username", user.getUsername());
 
         List<Product> productList = productService.getAllProduct();
         List<User> userList = userService.getAllUser();
         List<Category> categoryList = cateService.getAllCategory();
-
         List<Order_Details> orderDetailsList = orderDetailsService.getAllOrder_Details();
 
         req.setAttribute("orderDetailsList", orderDetailsList);
-
 
         RequestDispatcher dispatcher = req.getRequestDispatcher("/views/admin/view/list-order.jsp");
         dispatcher.forward(req, resp);
