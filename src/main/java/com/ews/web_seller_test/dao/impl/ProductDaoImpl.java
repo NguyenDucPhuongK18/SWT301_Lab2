@@ -21,7 +21,7 @@ public class ProductDaoImpl extends MyDAO implements ProductDao {
     @Override
     public void insertProduct(Product product) {
         xSql = "INSERT INTO Product(category_id, name, price, discount, image, description, created_at, updated_at, total_rating, total_starts, status) " +
-                "VALUES (?,?,?,?,?,?,GETDATE(),GETDATE(),?,?,?)";
+                "VALUES (?,?,?,?,?,?,NOW(),NOW(),?,?,?)";
         try {
             ps = con.prepareStatement(xSql);
             ps.setInt(1, product.getCategory().getId());
@@ -44,7 +44,7 @@ public class ProductDaoImpl extends MyDAO implements ProductDao {
     public int getIdInsertProduct(Product product) {
         int productId = 0;
         xSql = "INSERT INTO Product(category_id, name, price, discount, image, description, created_at, updated_at) " +
-                "VALUES (?,?,?,?,?,?,GETDATE(),GETDATE())";
+                "VALUES (?,?,?,?,?,?,NOW(),NOW())";
         try {
             PreparedStatement ps = con.prepareStatement(xSql, PreparedStatement.RETURN_GENERATED_KEYS);
             ps.setInt(1, product.getCategory().getId());
@@ -70,7 +70,7 @@ public class ProductDaoImpl extends MyDAO implements ProductDao {
 
     @Override
     public void editProduct(Product product) {
-        xSql = "UPDATE Product SET category_id = ?, name = ?, price = ?, discount = ?, image = ?, description = ?, created_at = GETDATE(), updated_at = GETDATE(), total_rating = ?, total_starts = ?, status = ?  " +
+        xSql = "UPDATE Product SET category_id = ?, name = ?, price = ?, discount = ?, image = ?, description = ?, created_at = NOW(), updated_at = NOW(), total_rating = ?, total_starts = ?, status = ?  " +
                 "WHERE id = ?";
 
         try {
@@ -110,7 +110,7 @@ public class ProductDaoImpl extends MyDAO implements ProductDao {
         xSql = "SELECT Product.id, Product.category_id, Product.name AS p_name, Product.price, Product.discount, Product.image, Product.description,Product.total_starts, Product.total_rating, Product.status, Category.name AS c_name, Category.id AS c_id "
                 + "FROM Product INNER JOIN Category " + "ON Product.category_id = Category.id WHERE Product.id= ? ";
         Category category;
-        Product product = new Product();;
+        Product product = new Product();
         try {
             ps = con.prepareStatement(xSql);
             ps.setInt(1, id);
