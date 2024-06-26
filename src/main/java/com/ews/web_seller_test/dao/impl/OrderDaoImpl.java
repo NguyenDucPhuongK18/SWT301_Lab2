@@ -17,7 +17,7 @@ public class OrderDaoImpl extends MyDAO implements OrderDao {
     @Override
     public void insertOrder(Order order) {
         xSql = "INSERT INTO Orders (user_id, price, phone_number, address, note, status, total_discount, total_quantity, total_price, created_at, updated_at) " +
-                "VALUES (?,?,?,?,?,?,?,?,?,GETDATE(),GETDATE())";
+                "VALUES (?,?,?,?,?,?,?,?,?, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP())";
         try {
             ps = con.prepareStatement(xSql);
             ps.setInt(1, order.getBuyer().getId());
@@ -40,7 +40,7 @@ public class OrderDaoImpl extends MyDAO implements OrderDao {
     public int getOrderId(Order order) {
         int orderId = 0;
         String xSql = "INSERT INTO Orders (user_id, price, phone_number, address, note, status, total_discount, total_quantity, total_price, created_at, updated_at) " +
-                "VALUES (?,?,?,?,?,?,?,?,?,GETDATE(),GETDATE())";
+                "VALUES (?,?,?,?,?,?,?,?,?,CURRENT_TIMESTAMP(),CURRENT_TIMESTAMP())";
         try {
             PreparedStatement ps = con.prepareStatement(xSql, PreparedStatement.RETURN_GENERATED_KEYS);
             ps.setInt(1, order.getBuyer().getId());
@@ -70,7 +70,7 @@ public class OrderDaoImpl extends MyDAO implements OrderDao {
 
     @Override
     public void editOrder(Order order) {
-        xSql = "UPDATE Orders SET user_id = ?, price = ?, phone_number = ?, address = ?, note = ?, status = ?, total_discount = ?, total_quantity = ?, total_price = ?,updated_at = GETDATE(), id = ? WHERE id = ? ";
+        xSql = "UPDATE Orders SET user_id = ?, price = ?, phone_number = ?, address = ?, note = ?, status = ?, total_discount = ?, total_quantity = ?, total_price = ?,updated_at = CURRENT_TIMESTAMP(), id = ? WHERE id = ? ";
         try {
             ps = con.prepareStatement(xSql);
             ps.setInt(1, order.getBuyer().getId());
@@ -112,7 +112,7 @@ public class OrderDaoImpl extends MyDAO implements OrderDao {
     @Override
     public Order getOrder(int id) {
         xSql = "SELECT Orders.id, Orders.created_at, User.email, User.username, User.id AS user_id "
-                + "FROM Orders INNER JOIN [User] " + "ON Orders.id = [User].id WHERE Orders.id= ? ";
+                + "FROM Orders INNER JOIN `User` " + "ON Orders.id = `User`.id WHERE Orders.id= ? ";
 
         try {
             ps = con.prepareStatement(xSql);
@@ -137,7 +137,7 @@ public class OrderDaoImpl extends MyDAO implements OrderDao {
     public List<Order> getAllOrder() {
         List<Order> orderList = new ArrayList<Order>();
         xSql = "SELECT Orders.id, Orders.created_at, User.email, User.username, User.id AS user_id "
-                + "FROM Orders INNER JOIN [User] " + "ON Orders.id = [User].id";
+                + "FROM Orders INNER JOIN `User` " + "ON Orders.id = `User`.id";
 
         try {
             ps = con.prepareStatement(xSql);
@@ -162,7 +162,7 @@ public class OrderDaoImpl extends MyDAO implements OrderDao {
     public List<Order> searchOrder(String name) {
         List<Order> orderList = new ArrayList<Order>();
         xSql = "SELECT Orders.id, Orders.created_at, User.email, User.username, User.id AS user_id "
-                + "FROM Orders INNER JOIN [User] " + "ON Orders.id = [User].id WHERE User.full_name LIKE ? ";
+                + "FROM Orders INNER JOIN `User` " + "ON Orders.id = `User`.id WHERE User.full_name LIKE ? ";
 
         try {
             ps = con.prepareStatement(xSql);

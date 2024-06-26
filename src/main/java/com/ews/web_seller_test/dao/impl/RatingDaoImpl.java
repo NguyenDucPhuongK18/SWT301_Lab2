@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RatingDaoImpl extends MyDAO implements RatingDao {
-    RatingService userService = new RatingServiceImpl();
 
     @Override
     public void insertRating(Rating rating) {
@@ -35,7 +34,7 @@ public class RatingDaoImpl extends MyDAO implements RatingDao {
 
     @Override
     public void editRating(Rating newRating) {
-        xSql = "UPDATE Rating SET content=?, number_starts=?, updated_at= GETDATE() WHERE id=?";
+        xSql = "UPDATE Rating SET content=?, number_starts=?, updated_id= CURRENT_TIMESTAMP() WHERE id=?";
         try {
             ps = con.prepareStatement(xSql);
             ps.setString(1, newRating.getContent());
@@ -76,8 +75,8 @@ public class RatingDaoImpl extends MyDAO implements RatingDao {
                 rating.setProduct_id(rs.getInt("product_id"));
                 rating.setUser_id(rs.getInt("user_id"));
                 rating.setNumber_starts(rs.getInt("number_starts"));
-                rating.setCreated_id(rs.getTimestamp("created_at"));
-                rating.setUpdated_id(rs.getTimestamp("updated_at"));
+                rating.setCreated_id(rs.getTimestamp("created_id"));
+                rating.setUpdated_id(rs.getTimestamp("updated_id"));
             }
             rs.close();
             ps.close();
@@ -101,8 +100,8 @@ public class RatingDaoImpl extends MyDAO implements RatingDao {
                 rating.setProduct_id(rs.getInt("product_id"));
                 rating.setUser_id(rs.getInt("user_id"));
                 rating.setNumber_starts(rs.getInt("number_starts"));
-                rating.setCreated_id(rs.getTimestamp("created_at"));
-                rating.setUpdated_id(rs.getTimestamp("updated_at"));
+                rating.setCreated_id(rs.getTimestamp("created_id"));
+                rating.setUpdated_id(rs.getTimestamp("updated_id"));
                 ratings.add(rating);
             }
             rs.close();
