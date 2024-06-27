@@ -35,6 +35,21 @@ public class Order implements Serializable {
         this.updated_at = updated_at;
     }
 
+    public Order(int id, User buyer, float price, String phone, String address, String note, int status, float total_discount, int total_quantity, float total_price, Date created_at, Date updated_at) {
+        this.id = id;
+        this.buyer = buyer;
+        this.price = price;
+        this.phone = phone;
+        this.address = address;
+        this.note = note;
+        this.status = status;
+        this.total_discount = total_discount;
+        this.total_quantity = total_quantity;
+        this.total_price = total_price;
+        this.created_at = created_at;
+        this.updated_at = updated_at;
+    }
+
     public int getId() {
         return id;
     }

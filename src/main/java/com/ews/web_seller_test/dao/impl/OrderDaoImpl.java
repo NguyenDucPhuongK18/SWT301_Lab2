@@ -21,7 +21,7 @@ public class OrderDaoImpl extends MyDAO implements OrderDao {
     public void insertOrder(Order order) {
         String xSql = "INSERT INTO Orders (user_id, price, phone_number, address, note, status, total_discount, total_quantity, total_price, created_at, updated_at) " +
                 "VALUES (?,?,?,?,?,?,?,?,?, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP())";
-        try (PreparedStatement ps = con.prepareStatement(xSql)) {
+        try (PreparedStatement ps = con.prepareStatement(xSql,Statement.RETURN_GENERATED_KEYS)) {
             ps.setInt(1, order.getBuyer().getId());
             ps.setFloat(2, order.getPrice());
             ps.setString(3, order.getPhone());

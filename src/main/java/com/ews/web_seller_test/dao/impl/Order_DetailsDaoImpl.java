@@ -46,7 +46,7 @@ public class Order_DetailsDaoImpl extends MyDAO implements Order_DetailsDao {
 
     @Override
     public void editOrder_Details(Order_Details order_details) {
-        xSql = "UPDATE Order_Details SET product_id = ?, price = ?, quantity = ?, discount = ?, updated_at = GETDATE() WHERE id = ?";
+        xSql = "UPDATE Order_Details SET product_id = ?, price = ?, quantity = ?, discount = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?";
         try {
             ps = con.prepareStatement(xSql);
             ps.setInt(1, order_details.getProduct().getId());
@@ -84,7 +84,7 @@ public class Order_DetailsDaoImpl extends MyDAO implements Order_DetailsDao {
                 Order order = new Order();
                 order.setId(orderId);
                 order.setBuyer(user);
-                order.setCreated_at(rs.getDate("created_at"));
+//                order.setCreated_at(rs.getDate("created_at"));
                 Product product = new Product();
                 product.setName(rs.getString("p_name"));
                 product.setPrice(rs.getFloat("price_od"));

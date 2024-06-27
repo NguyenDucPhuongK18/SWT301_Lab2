@@ -27,6 +27,17 @@ public class Order_Details implements Serializable {
         this.updated_at = updated_at;
     }
 
+    public Order_Details(int id, Order order, Product product, float price, int quantity, float discount, Date created_at, Date updated_at) {
+        this.id = id;
+        this.order = order;
+        this.product = product;
+        this.price = price;
+        this.quantity = quantity;
+        this.discount = discount;
+        this.created_at = created_at;
+        this.updated_at = updated_at;
+    }
+
     public int getId() {
         return id;
     }
@@ -89,5 +100,19 @@ public class Order_Details implements Serializable {
 
     public void setUpdated_at(Date updated_at) {
         this.updated_at = updated_at;
+    }
+
+    @Override
+    public String toString() {
+        return "Order_Details{" +
+                "id=" + id +
+                ", order=" + order +
+                ", product=" + product +
+                ", price=" + price +
+                ", quantity=" + quantity +
+                ", discount=" + discount +
+                ", created_at=" + created_at +
+                ", updated_at=" + updated_at +
+                '}';
     }
 }

@@ -31,6 +31,21 @@ public class User implements Serializable {
         this.updated_at = updated_at;
     }
 
+    public User(int id, String full_name, String email, String phone, String address, String username, String password, String gender, String avatar, Role role, Date created_at, Date updated_at) {
+        this.id = id;
+        this.full_name = full_name;
+        this.email = email;
+        this.phone = phone;
+        this.address = address;
+        this.username = username;
+        this.password = password;
+        this.gender = gender;
+        this.avatar = avatar;
+        this.role = role;
+        this.created_at = created_at;
+        this.updated_at = updated_at;
+    }
+
     public User(String full_name, String email, String phone, String address, String username, String password, String gender, String avatar, Role role) {
         this.full_name = full_name;
         this.email = email;
