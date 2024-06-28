@@ -6,24 +6,27 @@ import com.ews.web_seller_test.model.User;
 import com.ews.web_seller_test.service.CategoryService;
 import com.ews.web_seller_test.service.ProductService;
 import jakarta.servlet.RequestDispatcher;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.*;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
+//Done - TrongVV
 
 class ProductSearchByCategoryTest {
 
     @InjectMocks
-    private ProductSearchByCategory productSearchByCategory;
+    private ProductSearchByCategory servlet;
 
     @Mock
     private ProductService productService;
@@ -41,56 +44,61 @@ class ProductSearchByCategoryTest {
     private HttpSession session;
 
     @Mock
-    private RequestDispatcher requestDispatcher;
+    private RequestDispatcher dispatcher;
+
+    @Mock
+    private ServletContext context;
 
     @BeforeEach
-    void setUp() {
-        MockitoAnnotations.initMocks(this);
+    void setUp() throws ServletException {
+        MockitoAnnotations.openMocks(this);
+        servlet.init();
+        when(request.getSession()).thenReturn(session);
+        when(request.getRequestDispatcher(anyString())).thenReturn(dispatcher);
+        when(request.getServletContext()).thenReturn(context);
     }
 
     @Test
-    void testDoGet() throws Exception {
+    void testDoGet() throws ServletException, IOException {
         // Mock data
-        List<Category> mockCategoryList = new ArrayList<>();
-        mockCategoryList.add(new Category()); // Add some mock data as needed
-        when(categoryService.getAllCategory()).thenReturn(mockCategoryList);
+        List<Category> mockCategories = new ArrayList<>();
+        mockCategories.add(new Category(1, "TestCategory"));
 
+        List<Product> mockProducts = new ArrayList<>();
+        mockProducts.add(new Product(1, "Product1"));
+        mockProducts.add(new Product(2, "Product2"));
+
+        when(categoryService.getAllCategory()).thenReturn(mockCategories);
+        when(productService.countProductCategory(anyString())).thenReturn(2);
+        when(productService.searchProductByCategory(anyString(), anyInt(), anyInt())).thenReturn(mockProducts);
+
+        // Simulate request parameters
+        when(request.getParameter("txtSearch")).thenReturn("TestCategory");
+        when(request.getParameter("indexPage")).thenReturn("1");
+
+        // Mock session and user
         User mockUser = new User();
-        mockUser.setUsername("testUser");
+        mockUser.setUsername("testuser");
+        mockUser.setFull_name("Test User");
         when(session.getAttribute("account")).thenReturn(mockUser);
 
-        String txtSearch = "testCategory";
-        int mockCount = 10;
-        when(productService.countProductCategory(txtSearch)).thenReturn(mockCount);
+        // Invoke servlet doGet method
+        servlet.doGet(request, response);
 
-        int pageSize = 8;
-        int endPage = (mockCount % pageSize == 0) ? mockCount / pageSize : mockCount / pageSize + 1;
-        int indexPage = 1; // Assuming default index page
+        // Verify request attributes are set correctly
+        verify(request).setAttribute("username", "testuser");
+        verify(request).setAttribute("user", mockUser);
+        verify(request).setAttribute("name", "Test User");
+        verify(request).setAttribute("categoryList", mockCategories);
+        verify(request).setAttribute("checkCategorySearch", true);
+        verify(request).setAttribute("count", 2);
+        verify(request).setAttribute("end", 1);
+        verify(request).setAttribute("indexPage", 1);
+        verify(request).setAttribute("productList", mockProducts);
+        verify(request).setAttribute("txtSearch", "TestCategory");
 
-        List<Product> mockProductList = new ArrayList<>();
-        mockProductList.add(new Product()); // Add some mock data as needed
-        when(productService.searchProductByCategory(txtSearch, indexPage, pageSize)).thenReturn(mockProductList);
-
-        when(request.getSession()).thenReturn(session);
-        when(request.getRequestDispatcher(anyString())).thenReturn(requestDispatcher);
-        when(request.getParameter("txtSearch")).thenReturn(txtSearch);
-        when(request.getParameter("indexPage")).thenReturn(String.valueOf(indexPage));
-
-        // Call the doGet method
-        productSearchByCategory.doGet(request, response);
-
-        // Verify interactions
-        verify(categoryService, times(1)).getAllCategory();
-        verify(session, times(1)).getAttribute("account");
-        verify(productService, times(1)).countProductCategory(txtSearch);
-        verify(productService, times(1)).searchProductByCategory(txtSearch, indexPage, pageSize);
-        verify(request, times(1)).setAttribute(eq("categoryList"), anyList());
-        verify(request, times(1)).setAttribute(eq("username"), eq("testUser"));
-        verify(request, times(1)).setAttribute(eq("count"), eq(mockCount));
-        verify(request, times(1)).setAttribute(eq("end"), eq(endPage));
-        verify(request, times(1)).setAttribute(eq("indexPage"), eq(indexPage));
-        verify(request, times(1)).setAttribute(eq("productList"), anyList());
-        verify(request, times(1)).setAttribute(eq("txtSearch"), eq(txtSearch));
-        verify(requestDispatcher, times(1)).forward(request, response);
+        // Verify forward to correct JSP
+        verify(request.getRequestDispatcher("/views/user/shopping.jsp")).forward(request, response);
     }
+
 }

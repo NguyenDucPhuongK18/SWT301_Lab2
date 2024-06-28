@@ -64,11 +64,6 @@ public class ProductSearchByName extends HttpServlet {
         request.setAttribute("txtSearch", txtSearch);
         request.getRequestDispatcher("/views/user/shopping.jsp").forward(request, response);
     }
-
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-    }
 }
 
 

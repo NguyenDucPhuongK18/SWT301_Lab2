@@ -11,19 +11,17 @@ import com.ews.web_seller_test.service.impl.CategoryServiceImpl;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 
 import java.util.List;
-import java.util.Objects;
 
 public class ProductDaoImpl extends MyDAO implements ProductDao {
     CategoryService categoryService = new CategoryServiceImpl();
     @Override
     public void insertProduct(Product product) {
-        xSql = "INSERT INTO Product(category_id, name, price, discount, image, description, created_at, updated_at, total_rating, total_starts, status) " +
-                "VALUES (?,?,?,?,?,?,NOW(),NOW(),?,?,?)";
         try {
-            ps = con.prepareStatement(xSql);
+            ps = con.prepareStatement("INSERT INTO Product (category_id, name, price, discount, image, description, created_at, updated_at, total_rating, total_starts, status) VALUES (?,?,?,?,?,?,NOW(),NOW(),?,?,?)");
             ps.setInt(1, product.getCategory().getId());
             ps.setString(2, product.getName());
             ps.setFloat(3, product.getPrice());
@@ -43,30 +41,55 @@ public class ProductDaoImpl extends MyDAO implements ProductDao {
     @Override
     public int getIdInsertProduct(Product product) {
         int productId = 0;
-        xSql = "INSERT INTO Product(category_id, name, price, discount, image, description, created_at, updated_at) " +
-                "VALUES (?,?,?,?,?,?,NOW(),NOW())";
+        xSql = "INSERT INTO Product(category_id, name, price, discount, image, description, created_at, updated_at, total_rating, total_starts, status) " +
+                "VALUES (?,?,?,?,?,?,?,?,?,?,?)";
         try {
+            // Disable auto-commit
+            con.setAutoCommit(false);
+
             PreparedStatement ps = con.prepareStatement(xSql, PreparedStatement.RETURN_GENERATED_KEYS);
             ps.setInt(1, product.getCategory().getId());
             ps.setString(2, product.getName());
             ps.setFloat(3, product.getPrice());
             ps.setFloat(4, product.getDiscount());
-            ps.setString(5, "default.jpg");
+            ps.setString(5, product.getImage());
             ps.setString(6, product.getDescription());
+            ps.setTimestamp(7, new Timestamp(System.currentTimeMillis())); // created_at
+            ps.setTimestamp(8, new Timestamp(System.currentTimeMillis())); // updated_at
+            ps.setInt(9, product.getTotal_rating());
+            ps.setInt(10, product.getTotal_starts());
+            ps.setInt(11, product.getStatus());
+
             int rowAffected = ps.executeUpdate();
             if (rowAffected > 0) {
                 ResultSet rs = ps.getGeneratedKeys();
                 if (rs.next()) {
                     productId = rs.getInt(1);
                 }
+                // Commit transaction
                 con.commit();
             }
             ps.close();
         } catch (SQLException e) {
+            try {
+                // Rollback if an error occurs
+                con.rollback();
+            } catch (SQLException rollbackException) {
+                rollbackException.printStackTrace();
+            }
             e.printStackTrace();
+        } finally {
+            try {
+                // Restore auto-commit mode
+                con.setAutoCommit(true);
+            } catch (SQLException setAutoCommitException) {
+                setAutoCommitException.printStackTrace();
+            }
         }
         return productId;
     }
+
+
 
     @Override
     public void editProduct(Product product) {
@@ -110,7 +133,7 @@ public class ProductDaoImpl extends MyDAO implements ProductDao {
         xSql = "SELECT Product.id, Product.category_id, Product.name AS p_name, Product.price, Product.discount, Product.image, Product.description,Product.total_starts, Product.total_rating, Product.status, Category.name AS c_name, Category.id AS c_id "
                 + "FROM Product INNER JOIN Category " + "ON Product.category_id = Category.id WHERE Product.id= ? ";
         Category category;
-        Product product = new Product();
+        Product product = new Product(1, "Product1");
         try {
             ps = con.prepareStatement(xSql);
             ps.setInt(1, id);
@@ -147,7 +170,7 @@ public class ProductDaoImpl extends MyDAO implements ProductDao {
             rs = ps.executeQuery();
             while (rs.next()) {
                 Category category = categoryService.getCategory(rs.getInt("c_id"));
-                Product product = new Product();
+                Product product = new Product(1, "Product1");
 
                 product.setId(rs.getInt("id"));
                 product.setName(rs.getString("p_name"));
@@ -179,9 +202,9 @@ public class ProductDaoImpl extends MyDAO implements ProductDao {
             ResultSet rs = ps.executeQuery();
 
             while (rs.next()) {
-                Product product = new Product();
+                Product product = new Product(1, "Product1");
                 product.setId(rs.getInt("id"));
-                product.setName(rs.getString("p_name"));
+                product.setName(rs.getString("name"));
                 product.setPrice(rs.getFloat("price"));
                 product.setDiscount(rs.getFloat("discount"));
                 product.setImage(rs.getString("image"));
@@ -213,7 +236,7 @@ public class ProductDaoImpl extends MyDAO implements ProductDao {
 
             while (rs.next()) {
                 Category category = categoryService.getCategory(rs.getInt("c_id"));
-                Product product = new Product();
+                Product product = new Product(1, "Product1");
 
                 product.setId(rs.getInt("id"));
                 product.setName(rs.getString("p_name"));
@@ -246,7 +269,7 @@ public class ProductDaoImpl extends MyDAO implements ProductDao {
 
             while (rs.next()) {
                 Category category = categoryService.getCategory(rs.getInt("c_id"));
-                Product product = new Product();
+                Product product = new Product(1, "Product1");
 
                 product.setId(rs.getInt("id"));
                 product.setName(rs.getString("p_name"));
@@ -325,7 +348,7 @@ public class ProductDaoImpl extends MyDAO implements ProductDao {
 
             while (rs.next()) {
                 Category category = categoryService.getCategory(rs.getInt("category_id"));
-                Product product = new Product();
+                Product product = new Product(1, "Product1");
 
                 product.setId(rs.getInt("id"));
                 product.setName(rs.getString("name"));
@@ -363,7 +386,7 @@ public class ProductDaoImpl extends MyDAO implements ProductDao {
 
             while (rs.next()) {
                 Category category = categoryService.getCategory(rs.getInt("category_id"));
-                Product product = new Product();
+                Product product = new Product(1, "Product1");
 
                 product.setId(rs.getInt("id"));
                 product.setName(rs.getString("name"));

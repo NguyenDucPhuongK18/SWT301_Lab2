@@ -18,8 +18,23 @@ public class Product implements Serializable {
     private int total_starts;
     private int status;
 
-    public Product() {
+    public Product(int i, String product1) {
+        this.id = i;
+        this.name = product1;
     }
+
+    public Product(Category category, String name, float price, float discount, String image, String description, int total_rating, int total_starts, int status) {
+        this.category = category;
+        this.name = name;
+        this.price = price;
+        this.discount = discount;
+        this.image = image;
+        this.description = description;
+        this.total_rating = total_rating;
+        this.total_starts = total_starts;
+        this.status = status;
+    }
+
 
     public Product(int id, Category category, String name, float price, float discount, String image, String description, Date created_at, Date updated_at, int total_rating, int total_starts, int status) {
         this.id = id;
@@ -48,6 +63,29 @@ public class Product implements Serializable {
         this.total_rating = total_rating;
         this.total_starts = total_starts;
         this.status = status;
+    }
+
+    public Product(int i, String testProduct, float v) {
+    }
+
+    public Product(int i, String testProduct, String description, float v, Category testCategory) {
+        this.id = i;
+        this.name = testProduct;
+        this.description = description;
+        this.price = v;
+        this.category = testCategory;
+    }
+
+    public Product() {
+
+    }
+
+    public Product(int i, String product1, float v, float v1, String description1) {
+        this.id = i;
+        this.name = product1;
+        this.price = v;
+        this.discount = v1;
+        this.image = description1;
     }
 
     public int getId() {

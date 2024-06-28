@@ -9,14 +9,10 @@ import com.ews.web_seller_test.model.Product;
 import com.ews.web_seller_test.model.User;
 import com.ews.web_seller_test.service.OrderService;
 import com.ews.web_seller_test.service.ProductService;
-import com.ews.web_seller_test.service.UserService;
 import com.ews.web_seller_test.service.impl.OrderServiceImpl;
 import com.ews.web_seller_test.service.impl.ProductServiceImpl;
-import com.ews.web_seller_test.service.impl.UserServiceImpl;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -85,7 +81,7 @@ public class Order_DetailsDaoImpl extends MyDAO implements Order_DetailsDao {
                 order.setId(orderId);
                 order.setBuyer(user);
 //                order.setCreated_at(rs.getDate("created_at"));
-                Product product = new Product();
+                Product product = new Product(1, "Product1");
                 product.setName(rs.getString("p_name"));
                 product.setPrice(rs.getFloat("price_od"));
                 Order_Details order_details = new Order_Details();
@@ -151,7 +147,7 @@ public class Order_DetailsDaoImpl extends MyDAO implements Order_DetailsDao {
                 order.setBuyer(user);
                 order.setCreated_at(rs.getDate("created_at"));
 
-                Product product = new Product();
+                Product product = new Product(1, "Product1");
                 product.setName(rs.getString("name"));
                 product.setPrice(rs.getFloat("price_p"));
 
@@ -194,7 +190,7 @@ public class Order_DetailsDaoImpl extends MyDAO implements Order_DetailsDao {
                 Order order = new Order();
                 order.setBuyer(user);
                 order.setCreated_at(rs.getDate("created_at"));
-                Product product = new Product();
+                Product product = new Product(1, "Product1");
                 product.setName(rs.getString("p_name"));
                 product.setPrice(rs.getFloat("price_od"));
                 Order_Details order_details = new Order_Details();

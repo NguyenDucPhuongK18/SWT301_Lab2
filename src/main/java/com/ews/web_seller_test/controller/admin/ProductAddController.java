@@ -63,62 +63,74 @@ public class ProductAddController extends HttpServlet {
 
         String info = request.getParameter("info");
 
-        Product product = new Product();
+        Product product = new Product(); // Create a new instance to avoid NPE in case of unexpected conditions
 
-        if(info.equals("info")) {
-            String name = request.getParameter("name");
-            float price = Float.parseFloat(request.getParameter("price"));
-            float discount = Float.parseFloat(request.getParameter("discount"));
-            String des = request.getParameter("des");
-            Category category = new Category();
-            category = cateService.getCategory(Integer.parseInt(request.getParameter("category")));
-
-            product.setName(name);
-            product.setDiscount(discount);
-            product.setPrice(price);
-            product.setDescription(des);
-            product.setCategory(category);
-            int pid = productService.getIdInsertProduct(product);
-            product.setId(pid);
-            HttpSession session = request.getSession();
-            session.setAttribute("pidEdit", pid);
-            RequestDispatcher dispatcher = request.getRequestDispatcher("/views/admin/view/add-product.jsp");
-            dispatcher.forward(request, response);
-        }
-
-        if(info.equals("image")) {
+        if ("info".equals(info)) {
             try {
-                // Retrieve the file part from the request
-                Part filePart = request.getPart("fileImage");
-                String fileName = Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
-                System.out.println(fileName);
+                String name = request.getParameter("name");
+                float price = Float.parseFloat(request.getParameter("price"));
+                float discount = Float.parseFloat(request.getParameter("discount"));
+                String des = request.getParameter("des");
+                Category category = cateService.getCategory(Integer.parseInt(request.getParameter("category")));
 
-                // Save the file to the server
-                InputStream inputStream = filePart.getInputStream();
-                Files.copy(inputStream, Paths.get(uploadPath + File.separator + fileName));
-                System.out.println(uploadPath + File.separator + fileName);
+                product.setName(name);
+                product.setDiscount(discount);
+                product.setPrice(price);
+                product.setDescription(des);
+                product.setCategory(category);
+
+                int pid = productService.getIdInsertProduct(product);
+                product.setId(pid);
 
                 HttpSession session = request.getSession();
-                int pid= -1;
-                if(session.getAttribute("pidEdit")!= null) {
+                session.setAttribute("pidEdit", pid);
+
+                // Forward to JSP for further interaction if needed
+                RequestDispatcher dispatcher = request.getRequestDispatcher("/views/admin/view/add-product.jsp");
+                dispatcher.forward(request, response);
+            } catch (NumberFormatException e) {
+                response.getWriter().println("Error: Invalid number format for price or discount.");
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            }
+        }
+
+        if ("image".equals(info)) {
+            try {
+                Part filePart = request.getPart("fileImage");
+                String fileName = Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
+
+                InputStream inputStream = filePart.getInputStream();
+                Files.copy(inputStream, Paths.get(uploadPath + File.separator + fileName));
+
+                HttpSession session = request.getSession();
+                int pid = -1;
+                if (session.getAttribute("pidEdit") != null) {
                     pid = (int) session.getAttribute("pidEdit");
                     session.removeAttribute("pidEdit");
                 } else {
-                    request.setAttribute("notice", "Enter the form above before add image!");
-                    RequestDispatcher dispatcher = request.getRequestDispatcher("/views/admin/view/add-product.jsp");
-                    dispatcher.forward(request, response);
+                    response.getWriter().println("Error: No product ID found in session.");
+                    response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                    return;
                 }
+
                 Product pro = productService.getProduct(pid);
 
                 if (pro != null) {
                     pro.setImage(fileName);
+                    productService.editProduct(pro);
+                    response.getWriter().println("File uploaded successfully!");
+                } else {
+                    response.getWriter().println("Error: Product with ID " + pid + " not found.");
+                    response.setStatus(HttpServletResponse.SC_NOT_FOUND);
                 }
-                productService.editProduct(pro);
-                response.getWriter().println("File uploaded successfully!");
             } catch (IOException | ServletException e) {
                 response.getWriter().println("File upload failed due to an error: " + e.getMessage());
+                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             }
         }
+
+        // Redirect to product list page after processing
         response.sendRedirect(request.getContextPath() + "/admin/product/list");
     }
+
 }

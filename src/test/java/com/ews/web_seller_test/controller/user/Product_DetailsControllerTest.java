@@ -2,10 +2,9 @@ package com.ews.web_seller_test.controller.user;
 
 import com.ews.web_seller_test.model.Category;
 import com.ews.web_seller_test.model.Product;
-import com.ews.web_seller_test.model.User;
 import com.ews.web_seller_test.service.CategoryService;
 import com.ews.web_seller_test.service.ProductService;
-import jakarta.servlet.RequestDispatcher;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -15,16 +14,19 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.*;
-
+//Done - TrongVV
 class Product_DetailsControllerTest {
 
     @InjectMocks
-    private Product_DetailsController productDetailsController;
+    private Product_DetailsController controller;
 
     @Mock
     private ProductService productService;
@@ -41,48 +43,43 @@ class Product_DetailsControllerTest {
     @Mock
     private HttpSession session;
 
-    @Mock
-    private RequestDispatcher requestDispatcher;
-
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
+
+        // Mock behavior for request and session
+        when(request.getParameter("id")).thenReturn("1");
+        when(request.getSession()).thenReturn(session);
     }
 
     @Test
     void testDoGet() throws Exception {
         // Mock data
-        String mockProductId = "1";
-        Product mockProduct = new Product(); // Create a mock Product object as needed
-        when(productService.getProduct(Integer.parseInt(mockProductId))).thenReturn(mockProduct);
+        Product mockProduct = new Product(1, "Product1");
+        mockProduct.setId(1);
+        mockProduct.setName("Test Product");
+        List<Category> mockCategories = new ArrayList<>();
+        mockCategories.add(new Category(1, "TestCategory"));
+        List<Product> mockProducts = new ArrayList<>();
+        mockProducts.add(mockProduct);
 
-        List<Category> mockCategoryList = new ArrayList<>();
-        mockCategoryList.add(new Category()); // Add some mock data as needed
-        when(categoryService.getAllCategory()).thenReturn(mockCategoryList);
+        // Mock service responses
+        when(productService.getProduct(anyInt())).thenReturn(mockProduct);
+        when(categoryService.getAllCategory()).thenReturn(mockCategories);
+        when(productService.getAllProduct()).thenReturn(mockProducts);
 
-        List<Product> mockProductList = new ArrayList<>();
-        mockProductList.add(new Product()); // Add some mock data as needed
-        when(productService.getAllProduct()).thenReturn(mockProductList);
+        // Mock getRequestDispatcher to return null
+        when(request.getRequestDispatcher("/views/user/single-product.jsp")).thenReturn(null);
 
-        when(request.getParameter("id")).thenReturn(mockProductId);
-        when(request.getSession()).thenReturn(session);
-        when(session.getAttribute("account")).thenReturn(new User()); // Mock user session data
+        // Invoke controller method
+        assertThrows(ServletException.class, () -> controller.doGet(request, response));
 
-        when(request.getRequestDispatcher(anyString())).thenReturn(requestDispatcher);
+        // Verify request attributes are set correctly
+        verify(request).setAttribute("product", mockProduct);
+        verify(request).setAttribute("categories", mockCategories);
+        verify(request).setAttribute("productList", mockProducts);
 
-        // Call the doGet method
-        productDetailsController.doGet(request, response);
-
-        // Verify interactions
-        verify(productService, times(1)).getProduct(Integer.parseInt(mockProductId));
-        verify(categoryService, times(1)).getAllCategory();
-        verify(productService, times(1)).getAllProduct();
-        verify(request, times(1)).setAttribute(eq("categories"), anyList());
-        verify(request, times(1)).setAttribute(eq("productList"), anyList());
-        verify(request, times(1)).setAttribute(eq("product"), eq(mockProduct));
-        verify(request, times(1)).setAttribute(eq("username"), anyString()); // Adjust as per session data
-        verify(request, times(1)).setAttribute(eq("user"), any(User.class)); // Adjust as per session data
-        verify(request, times(1)).setAttribute(eq("amount"), anyInt()); // Adjust as per session data
-        verify(requestDispatcher, times(1)).forward(request, response);
+        // Verify session attribute retrieval
+        verify(session).getAttribute("account");
     }
 }

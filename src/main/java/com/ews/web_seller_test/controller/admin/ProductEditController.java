@@ -8,12 +8,10 @@ import java.nio.file.Paths;
 import java.util.List;
 
 import com.ews.web_seller_test.model.Category;
-import com.ews.web_seller_test.model.Order_Details;
 import com.ews.web_seller_test.model.Product;
 import com.ews.web_seller_test.model.User;
 import com.ews.web_seller_test.service.*;
 import com.ews.web_seller_test.service.impl.*;
-import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
@@ -75,7 +73,7 @@ public class ProductEditController extends HttpServlet {
 
         String info = request.getParameter("info");
 
-        Product product = new Product();
+        Product product = new Product(1, "Product1");
 
         if(info.equals("info")) {
             String name = request.getParameter("name");

@@ -83,6 +83,12 @@ public class User implements Serializable {
 
     }
 
+    public User(int i, String testUser, String password) {
+        this.id = i;
+        this.full_name = testUser;
+        this.password = password;
+    }
+
     public int getId() {
         return id;
     }

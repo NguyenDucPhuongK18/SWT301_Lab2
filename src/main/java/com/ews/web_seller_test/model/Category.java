@@ -11,6 +11,13 @@ public class Category implements Serializable {
 
     public Category() {
     }
+    @Override
+    public String toString() {
+        return "Category{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                '}';
+    }
 
     public Category(int id, String name, Date created_at, Date updated_at) {
         this.id = id;

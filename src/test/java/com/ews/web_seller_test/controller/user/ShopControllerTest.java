@@ -7,7 +7,6 @@ import com.ews.web_seller_test.model.User;
 import com.ews.web_seller_test.service.CategoryService;
 import com.ews.web_seller_test.service.ProductService;
 import jakarta.servlet.RequestDispatcher;
-import jakarta.servlet.ServletContext;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -68,7 +67,7 @@ class ShopControllerTest {
         when(session.getAttribute("cart")).thenReturn(mockCart);
 
         List<Product> mockProductList = new ArrayList<>();
-        mockProductList.add(new Product()); // Add some mock data as needed
+        mockProductList.add(new Product(1, "Product1")); // Add some mock data as needed
         when(productService.countProduct(anyString())).thenReturn(10);
         when(productService.searchProductByName(anyString(), anyInt(), anyInt())).thenReturn(mockProductList);
 

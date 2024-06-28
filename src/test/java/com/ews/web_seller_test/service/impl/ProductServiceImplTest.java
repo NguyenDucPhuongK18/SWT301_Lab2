@@ -30,7 +30,7 @@ class ProductServiceImplTest {
 
     @Test
     void insertProduct() {
-        Product product = new Product();
+        Product product = new Product(1, "Product1");
         doNothing().when(productDao).insertProduct(product);
 
         productService.insertProduct(product);
@@ -40,7 +40,7 @@ class ProductServiceImplTest {
 
     @Test
     void getIdInsertProduct() {
-        Product product = new Product();
+        Product product = new Product(1, "Product1");
         int expectedId = 1;
         when(productDao.getIdInsertProduct(product)).thenReturn(expectedId);
 
@@ -66,9 +66,9 @@ class ProductServiceImplTest {
 
     @Test
     void editProduct() {
-        Product newProduct = new Product();
+        Product newProduct = new Product(1, "Product1");
         newProduct.setId(1);
-        Product oldProduct = new Product();
+        Product oldProduct = new Product(1, "Product1");
         oldProduct.setId(1);
 
         when(productDao.getProduct(newProduct.getId())).thenReturn(oldProduct);
@@ -131,7 +131,7 @@ class ProductServiceImplTest {
     @Test
     void getProduct() {
         int productId = 1;
-        Product expectedProduct = new Product();
+        Product expectedProduct = new Product(1, "Product1");
         when(productDao.getProduct(productId)).thenReturn(expectedProduct);
 
         Product product = productService.getProduct(productId);

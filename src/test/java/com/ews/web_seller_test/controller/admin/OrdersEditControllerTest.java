@@ -3,7 +3,6 @@ package com.ews.web_seller_test.controller.admin;
 import com.ews.web_seller_test.model.*;
 import com.ews.web_seller_test.service.*;
 import jakarta.servlet.RequestDispatcher;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -13,7 +12,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -124,7 +122,7 @@ class OrdersEditControllerTest {
         // Mock getOrder_Details and getProduct methods
         Order_Details mockOrderDetails = new Order_Details();
         when(orderDetailsService.getOrder_Details(1)).thenReturn(mockOrderDetails);
-        when(productService.getProduct(1)).thenReturn(new Product()); // Mock a Product object
+        when(productService.getProduct(1)).thenReturn(new Product(1, "Product1")); // Mock a Product object
 
         // Call the controller method
         controller.doPost(request, response);

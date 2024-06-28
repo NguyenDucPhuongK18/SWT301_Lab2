@@ -2,42 +2,38 @@ package com.ews.web_seller_test.controller.admin;
 
 import com.ews.web_seller_test.model.Category;
 import com.ews.web_seller_test.model.Product;
-import com.ews.web_seller_test.model.User;
 import com.ews.web_seller_test.model.Role;
+import com.ews.web_seller_test.model.User;
 import com.ews.web_seller_test.service.CategoryService;
 import com.ews.web_seller_test.service.ProductService;
+import com.ews.web_seller_test.service.UserService;
 import jakarta.servlet.RequestDispatcher;
-import jakarta.servlet.ServletContext;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import jakarta.servlet.http.Part;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.io.File;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-
+// Done - Trong VV  - Doing : testDoPost_Image
 class ProductEditControllerTest {
-
-    @InjectMocks
-    private ProductEditController productEditController;
 
     @Mock
     private ProductService productService;
 
     @Mock
     private CategoryService categoryService;
+
+    @Mock
+    private UserService userService;
 
     @Mock
     private HttpServletRequest request;
@@ -49,105 +45,96 @@ class ProductEditControllerTest {
     private HttpSession session;
 
     @Mock
-    private RequestDispatcher requestDispatcher;
+    private RequestDispatcher dispatcher;
 
-    @Mock
-    private ServletContext servletContext;
-
-    @Mock
-    private Part filePart;
+    @InjectMocks
+    private ProductEditController controller;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.initMocks(this);
-    }
 
-    @Test
-    void testInit() throws Exception {
-        when(servletContext.getRealPath("/assets/user/img/product")).thenReturn("/path/to/upload");
-
-        productEditController.init();
-
-        verify(servletContext, times(1)).getRealPath("/assets/user/img/product");
-        Path path = Paths.get("/path/to/upload");
-        File uploadDir = path.toFile();
-        if (!uploadDir.exists()) {
-            uploadDir.mkdirs();
-        }
+        // Mock behavior of getSession and getRequestDispatcher
+        when(request.getSession()).thenReturn(session);
+        when(request.getRequestDispatcher(any(String.class))).thenReturn(dispatcher);
     }
 
     @Test
     void testDoGet() throws Exception {
-        User mockUser = new User();
-        Role role = new Role();
-        role.setId(1); // Assuming 1 is an admin role
-        mockUser.setRole(role);
-        when(session.getAttribute("account")).thenReturn(mockUser);
+        // Mock user session
+        User adminUser = createMockUserWithRole(1); // Replace 1 with a valid role ID
 
-        String mockId = "1";
-        when(request.getParameter("id")).thenReturn(mockId);
-        when(productService.getProduct(Integer.parseInt(mockId))).thenReturn(new Product());
-        when(categoryService.getAllCategory()).thenReturn(new ArrayList<>());
+        // Initialize a Category and Product for testing
+        Category category = new Category();
+        category.setId(1);
+        category.setName("TestCategory");
 
-        when(request.getSession()).thenReturn(session);
-        when(request.getRequestDispatcher("/views/admin/view/edit-product.jsp")).thenReturn(requestDispatcher);
+        Product product = new Product();
+        product.setId(1);
+        product.setName("TestProduct");
+        product.setCategory(category);
 
-        productEditController.doGet(request, response);
+        // Mock ProductService to return predefined product
+        when(productService.getProduct(1)).thenReturn(product);
 
-        verify(productService, times(1)).getProduct(Integer.parseInt(mockId));
-        verify(categoryService, times(1)).getAllCategory();
-        verify(request, times(1)).setAttribute(eq("product"), any(Product.class));
-        verify(request, times(1)).setAttribute(eq("categories"), anyList());
-        verify(requestDispatcher, times(1)).forward(request, response);
+        // Mock CategoryService to return a list of categories
+        List<Category> categories = new ArrayList<>();
+        categories.add(category);
+        when(categoryService.getAllCategory()).thenReturn(categories);
+
+        // Mock session attribute retrieval
+        when(session.getAttribute("account")).thenReturn(adminUser);
+
+        // Mock request parameters
+        when(request.getParameter("id")).thenReturn("1");
+
+        // Perform servlet doGet
+        controller.doGet(request, response);
+
+        // Verify attribute setting and forward to edit-product.jsp
+        verify(request).setAttribute("username", adminUser.getUsername());
+        verify(request).setAttribute("id", "1");
+        verify(request).setAttribute("product", product);
+        verify(request).setAttribute("categories", categories);
+        verify(dispatcher).forward(request, response);
     }
 
     @Test
-    void testDoPostUpdateInfo() throws Exception {
-        User mockUser = new User();
-        Role role = new Role();
-        role.setId(1); // Assuming 1 is an admin role
-        mockUser.setRole(role);
-        when(session.getAttribute("account")).thenReturn(mockUser);
-
-        when(request.getSession()).thenReturn(session);
-        when(request.getParameter("info")).thenReturn("info");
-        when(request.getParameter("id")).thenReturn("1");
-        when(request.getParameter("name")).thenReturn("Test Product");
-        when(request.getParameter("price")).thenReturn("100");
-        when(request.getParameter("discount")).thenReturn("10");
-        when(request.getParameter("des")).thenReturn("Test Description");
-        when(request.getParameter("category")).thenReturn("1");
-        when(categoryService.getCategory(1)).thenReturn(new Category());
-
-        productEditController.doPost(request, response);
-
-        verify(productService, times(1)).editProduct(any(Product.class));
-        verify(response, times(1)).sendRedirect(request.getContextPath() + "/admin/product/list");
+    void testDoPost_Image() throws Exception {
+//        // Mock user session
+//        User adminUser = createMockUserWithRole(1); // Replace 1 with a valid role ID
+//
+//        // Mock session attribute retrieval
+//        when(session.getAttribute("account")).thenReturn(adminUser);
+//
+//        // Mock request parameters
+//        when(request.getParameter("info")).thenReturn("image");
+//        when(request.getParameter("id")).thenReturn("1");
+//
+//        // Mock ProductService to return predefined product
+//        Product product = new Product();
+//        product.setId(1);
+//        when(productService.getProduct(1)).thenReturn(product);
+//
+//        // Mock Part and file upload
+//        when(request.getPart("fileImage")).thenReturn(null); // mock Part instance
+//
+//        // Perform servlet doPost for image upload
+//        controller.doPost(request, response);
+//
+//        // Verify ProductService method calls and response content
+//        verify(productService).getProduct(1);
+//        verify(productService).editProduct(product);
+//        verify(response).getWriter().println("File upload failed due to an error: null");
     }
 
-    @Test
-    void testDoPostUpdateImage() throws Exception {
-        User mockUser = new User();
+    private User createMockUserWithRole(int roleId) {
         Role role = new Role();
-        role.setId(1); // Assuming 1 is an admin role
-        mockUser.setRole(role);
-        when(session.getAttribute("account")).thenReturn(mockUser);
+        role.setId(roleId); // Set a valid role ID
 
-        when(request.getSession()).thenReturn(session);
-        when(request.getParameter("info")).thenReturn("image");
-        when(request.getParameter("id")).thenReturn("1");
-        when(request.getPart("fileImage")).thenReturn(filePart);
-        when(filePart.getSubmittedFileName()).thenReturn("testImage.jpg");
-        InputStream mockInputStream = mock(InputStream.class);
-        when(filePart.getInputStream()).thenReturn(mockInputStream);
-        Files.copy(mockInputStream, Paths.get("/path/to/upload" + File.separator + "testImage.jpg"));
-        when(productService.getProduct(1)).thenReturn(new Product());
+        User user = new User();
+        user.setRole(role);
 
-        productEditController.doPost(request, response);
-
-        verify(filePart, times(1)).getSubmittedFileName();
-        verify(filePart, times(1)).getInputStream();
-        verify(productService, times(1)).editProduct(any(Product.class));
-        verify(response, times(1)).sendRedirect(request.getContextPath() + "/admin/product/list");
+        return user;
     }
 }

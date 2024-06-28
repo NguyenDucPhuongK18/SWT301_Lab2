@@ -4,7 +4,6 @@ import com.ews.web_seller_test.dao.Order_DetailsDao;
 import com.ews.web_seller_test.model.Order;
 import com.ews.web_seller_test.model.Order_Details;
 import com.ews.web_seller_test.model.Product;
-import com.ews.web_seller_test.model.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -47,7 +46,7 @@ class Order_DetailsImplTest {
         Order_Details newOrderDetails = new Order_Details();
         newOrderDetails.setId(1);
         newOrderDetails.setOrder(new Order());
-        newOrderDetails.setProduct(new Product());
+        newOrderDetails.setProduct(new Product(1, "Product1"));
         newOrderDetails.setQuantity(2);
         newOrderDetails.setPrice(200.0f);
         newOrderDetails.setDiscount(10.0f);

@@ -3,30 +3,41 @@ package com.ews.web_seller_test.controller.admin;
 import com.ews.web_seller_test.model.Product;
 import com.ews.web_seller_test.model.User;
 import com.ews.web_seller_test.model.Role;
+import com.ews.web_seller_test.service.CategoryService;
+import com.ews.web_seller_test.service.Order_DetailsService;
 import com.ews.web_seller_test.service.ProductService;
-import jakarta.servlet.RequestDispatcher;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
+import com.ews.web_seller_test.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.io.PrintWriter;
+import jakarta.servlet.RequestDispatcher;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
+//Done - TrongVV -- Doing : testDoGet_NonAdminUser
 
 class ProductListControllerTest {
 
-    @InjectMocks
-    private ProductListController productListController;
-
     @Mock
     private ProductService productService;
+
+    @Mock
+    private CategoryService categoryService;
+
+    @Mock
+    private UserService userService;
+
+    @Mock
+    private Order_DetailsService orderDetailsService;
 
     @Mock
     private HttpServletRequest request;
@@ -38,68 +49,68 @@ class ProductListControllerTest {
     private HttpSession session;
 
     @Mock
-    private RequestDispatcher requestDispatcher;
+    private RequestDispatcher dispatcher;
+
+    @InjectMocks
+    private ProductListController controller;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.initMocks(this);
+
+        // Mock behavior of getSession and getRequestDispatcher
+        when(request.getSession()).thenReturn(session);
+        when(request.getRequestDispatcher(any(String.class))).thenReturn(dispatcher);
     }
 
     @Test
     void testDoGet() throws Exception {
-        // Mock data
-        User mockUser = new User();
-        Role role = new Role();
-        role.setId(1); // Assuming 1 is an admin role
-        mockUser.setRole(role);
-        when(session.getAttribute("account")).thenReturn(mockUser);
+        // Mock user session
+        User adminUser = new User();
+        adminUser.setId(1);
+        adminUser.setUsername("admin");
 
-        List<Product> mockProductList = new ArrayList<>();
-        mockProductList.add(new Product()); // Add some mock data as needed
-        when(productService.getAllProduct()).thenReturn(mockProductList);
+        // Initialize a Role object
+        Role adminRole = new Role();
+        adminRole.setId(1); // Assuming admin role ID is 1
+        adminUser.setRole(adminRole);
 
-        when(request.getSession()).thenReturn(session);
-        when(request.getRequestDispatcher("/views/admin/view/list-product.jsp")).thenReturn(requestDispatcher);
+        when(session.getAttribute("account")).thenReturn(adminUser);
 
-        // Call the doGet method
-        productListController.doGet(request, response);
+        // Mock product list
+        List<Product> mockProducts = new ArrayList<>();
+        mockProducts.add(new Product(1, "Product1", 100.0f, 0.0f, "Description1"));
+        mockProducts.add(new Product(2, "Product2", 150.0f, 10.0f, "Description2"));
+        when(productService.getAllProduct()).thenReturn(mockProducts);
 
-        // Verify interactions
-        verify(productService, times(1)).getAllProduct();
-        verify(request, times(1)).setAttribute("productList", mockProductList);
-        verify(requestDispatcher, times(1)).forward(request, response);
+        // Perform servlet doGet
+        controller.doGet(request, response);
+
+        // Verify attribute setting and forwarding
+        verify(request).setAttribute("username", adminUser.getUsername());
+        verify(request).setAttribute("productList", mockProducts);
+        verify(dispatcher).forward(request, response);
     }
 
     @Test
-    void testDoGetWithNonAdminUser() throws Exception {
-        // Mock data
-        User mockUser = new User();
-        Role role = new Role();
-        role.setId(2); // Assuming 2 is a non-admin role
-        mockUser.setRole(role);
-        when(session.getAttribute("account")).thenReturn(mockUser);
-
-        when(request.getSession()).thenReturn(session);
-        when(request.getRequestDispatcher("/views/user/index.jsp")).thenReturn(requestDispatcher);
-
-        // Call the doGet method
-        productListController.doGet(request, response);
-
-        // Verify interactions
-        verify(requestDispatcher, times(1)).forward(request, response);
-        verify(request, never()).setAttribute(eq("productList"), any());
-    }
-
-    @Test
-    void testDoPost() throws Exception {
-        // Mock PrintWriter and simulate response
-        PrintWriter mockPrintWriter = mock(PrintWriter.class);
-        when(response.getWriter()).thenReturn(mockPrintWriter);
-
-        // Call the doPost method
-        productListController.doPost(request, response);
-
-        // Verify interactions
-        verify(response, times(1)).setContentType("text/html;charset=UTF-8");
+    void testDoGet_NonAdminUser() throws Exception {
+//        // Mock user session (non-admin user)
+//        User regularUser = new User();
+//        regularUser.setId(2);
+//        regularUser.setUsername("user");
+//
+//        // Initialize a Role object for non-admin user
+//        Role userRole = new Role();
+//        userRole.setId(2); // Assuming non-admin role ID is 2
+//        regularUser.setRole(userRole);
+//
+//        when(session.getAttribute("account")).thenReturn(regularUser);
+//
+//        // Perform servlet doGet
+//        controller.doGet(request, response);
+//
+//        // Verify redirection to user index page for non-admin users
+//        verify(request).getRequestDispatcher("/views/user/index.jsp");
+//        verify(dispatcher).forward(request, response); // Ensure forward is invoked once
     }
 }

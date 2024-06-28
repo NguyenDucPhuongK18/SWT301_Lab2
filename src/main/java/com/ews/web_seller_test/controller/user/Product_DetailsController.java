@@ -14,6 +14,7 @@ import com.ews.web_seller_test.service.CategoryService;
 import com.ews.web_seller_test.service.ProductService;
 import com.ews.web_seller_test.service.impl.CategoryServiceImpl;
 import com.ews.web_seller_test.service.impl.ProductServiceImpl;
+import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -39,12 +40,11 @@ public class Product_DetailsController extends HttpServlet {
 
         request.setAttribute("categories", categoryList);
         request.setAttribute("productList", productList);
-
         request.setAttribute("product", product);
 
-        //Get session username
+        // Get session username
         HttpSession session = request.getSession();
-        if(session != null && session.getAttribute("account") != null) {
+        if (session != null && session.getAttribute("account") != null) {
             User user = (User) session.getAttribute("account");
             request.setAttribute("username", user.getUsername());
             request.setAttribute("user", user);
@@ -53,18 +53,20 @@ public class Product_DetailsController extends HttpServlet {
         int amount = 0;
         HttpSession httpSession = request.getSession();
         Map<Integer, Order_Details> mapList = null;
-        if(httpSession.getAttribute("cart") != null) {
-            mapList  = (Map<Integer, Order_Details>) httpSession.getAttribute("cart");
+        if (httpSession.getAttribute("cart") != null) {
+            mapList = (Map<Integer, Order_Details>) httpSession.getAttribute("cart");
             amount = mapList.size();
             request.setAttribute("amount", amount);
         }
 
-        request.getRequestDispatcher("/views/user/single-product.jsp").forward(request, response);
-    }
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        PrintWriter pr = response.getWriter();
+        // Forward request to JSP page
+        String jspPath = "/views/user/single-product.jsp";
+        RequestDispatcher dispatcher = request.getRequestDispatcher(jspPath);
+        if (dispatcher != null) {
+            dispatcher.forward(request, response);
+        } else {
+            // Handle the case where dispatcher is null
+            throw new ServletException("Unable to dispatch to JSP: " + jspPath);
+        }
     }
 }

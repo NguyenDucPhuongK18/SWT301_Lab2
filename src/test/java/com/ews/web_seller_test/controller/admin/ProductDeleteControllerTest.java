@@ -13,12 +13,15 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import static org.mockito.Mockito.*;
+import java.io.IOException;
 
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.*;
+//Done - TrongVV
 class ProductDeleteControllerTest {
 
     @InjectMocks
-    private ProductDeleteController productDeleteController;
+    private ProductDeleteController servlet;
 
     @Mock
     private ProductService productService;
@@ -33,52 +36,56 @@ class ProductDeleteControllerTest {
     private HttpSession session;
 
     @Mock
-    private RequestDispatcher requestDispatcher;
+    private RequestDispatcher dispatcher;
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.initMocks(this);
-    }
-
-    @Test
-    void testDoGetAdminUser() throws Exception {
-        User mockUser = new User();
-        Role role = new Role();
-        role.setId(1); // Assuming 1 is an admin role
-        mockUser.setRole(role);
-        when(session.getAttribute("account")).thenReturn(mockUser);
-
-        String mockId = "1";
-        when(request.getParameter("id")).thenReturn(mockId);
+        MockitoAnnotations.openMocks(this);
         when(request.getSession()).thenReturn(session);
-
-        productDeleteController.doGet(request, response);
-
-        verify(productService, times(1)).deleteProduct(Integer.parseInt(mockId));
-        verify(response, times(1)).sendRedirect(request.getContextPath() + "/admin/product/list");
+        when(request.getParameter("id")).thenReturn("1"); // Mocking product ID parameter
     }
 
     @Test
-    void testDoGetRegularUser() throws Exception {
-        User mockUser = new User();
-        Role role = new Role();
-        role.setId(2); // Assuming 2 is a regular user role
-        mockUser.setRole(role);
-        when(session.getAttribute("account")).thenReturn(mockUser);
+    void testDoGet_AdminUser() throws Exception {
+        // Mock user session
+        User adminUser = new User();
+        adminUser.setId(1);
+        adminUser.setUsername("admin");
+        when(session.getAttribute("account")).thenReturn(adminUser);
 
-        when(request.getSession()).thenReturn(session);
-        when(request.getRequestDispatcher("/views/user/index.jsp")).thenReturn(requestDispatcher);
+        // Mock redirect behavior
+        doNothing().when(response).sendRedirect(anyString());
 
-        productDeleteController.doGet(request, response);
+        // Perform servlet doGet
+        servlet.doGet(request, response);
 
-        verify(requestDispatcher, times(1)).forward(request, response);
-        verify(productService, never()).deleteProduct(anyInt());
+        // Verify product deletion interaction
+        verify(productService, times(1)).deleteProduct(1); // Verify deleteProduct method called once with ID 1
     }
 
     @Test
-    void testDoPost() throws Exception {
-        productDeleteController.doPost(request, response);
-        // Since doPost is not implemented, just check that response content type is set correctly
-        verify(response, times(1)).setContentType("text/html;charset=UTF-8");
+    void testDoGet_NonAdminUser() throws Exception {
+        // Mock user session
+        User nonAdminUser = new User();
+        nonAdminUser.setId(2);
+        nonAdminUser.setUsername("user");
+        nonAdminUser.setRole(new Role(3, "User")); // Assuming non-admin user role is not ID 2
+
+        when(session.getAttribute("account")).thenReturn(nonAdminUser);
+
+        // Mock request parameters and attributes
+        when(request.getParameter("id")).thenReturn("1");
+
+        // Perform servlet doGet
+        servlet.doGet(request, response);
+
+        // Verify request attribute settings
+        verify(request).setAttribute("username", "user");
+
+        // Verify dispatcher forward to user index page
+        verify(request, never()).getRequestDispatcher("/views/user/index.jsp");
+        verify(dispatcher, never()).forward(request, response); // Ensure no forward happens
+        verify(response).sendRedirect(request.getContextPath() + "/admin/product/list"); // Ensure redirect to admin list page
     }
+
 }

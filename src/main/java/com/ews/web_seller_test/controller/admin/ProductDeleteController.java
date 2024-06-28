@@ -22,24 +22,23 @@ public class ProductDeleteController extends HttpServlet {
     CategoryService cateService = new CategoryServiceImpl();
     UserService userService = new UserServiceImpl();
     Order_DetailsService orderDetailsService = new Order_DetailsImpl();
-
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         HttpSession session = req.getSession();
-        Object obj=session.getAttribute("account");
-        User user=(User) obj;
-        if(user.getRole().getId() == 2) {
-            req.getRequestDispatcher("/views/user/index.jsp").forward(req, resp);
+        Object obj = session.getAttribute("account");
+        if (obj instanceof User) {
+            User user = (User) obj;
+            if (user.getRole() != null && user.getRole().getId() == 2) {
+                req.getRequestDispatcher("/views/user/index.jsp").forward(req, resp);
+                return; // Exit the method after forwarding
+            }
+            req.setAttribute("username", user.getUsername());
+            String id = req.getParameter("id");
+            productService.deleteProduct(Integer.parseInt(id));
+            resp.sendRedirect(req.getContextPath() + "/admin/product/list");
+        } else {
+            resp.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized access");
         }
-        req.setAttribute("username", user.getUsername());
-        String id = req.getParameter("id");
-        productService.deleteProduct(Integer.parseInt(id));
-        resp.sendRedirect(req.getContextPath() + "/admin/product/list");
     }
 
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-    }
 }
