@@ -15,8 +15,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class RatingDaoImplTest {
     private RatingDaoImpl ratingDao;
-    private final ByteArrayOutputStream logContent = new ByteArrayOutputStream();
-    private final PrintStream originalErr = System.err;
     private final Logger logger = Logger.getLogger(RatingDaoImpl.class.getName());
     private final TestLogHandler logHandler = new TestLogHandler();
 
@@ -39,7 +37,7 @@ class RatingDaoImplTest {
     }
 
     @Test
-    void insertRating() throws SQLException {
+    void insertRating() {
         Rating rating = new Rating();
         rating.setContent("Great product!");
         rating.setProduct_id(1);
@@ -71,7 +69,7 @@ class RatingDaoImplTest {
     }
 
     @Test
-    void editRating() throws SQLException {
+    void editRating() {
         Rating rating = new Rating();
         rating.setContent("Good product!");
         rating.setProduct_id(1);
@@ -109,7 +107,7 @@ class RatingDaoImplTest {
     }
 
     @Test
-    void deleteRating() throws SQLException {
+    void deleteRating() {
         Rating rating = new Rating();
         rating.setContent("This is a test review");
         rating.setProduct_id(1);
@@ -137,7 +135,7 @@ class RatingDaoImplTest {
     }
 
     @Test
-    void getRating() throws SQLException {
+    void getRating() {
         Rating rating = new Rating();
         rating.setContent("Another test review");
         rating.setProduct_id(1);
@@ -165,7 +163,7 @@ class RatingDaoImplTest {
     }
 
     @Test
-    void getAllRating() throws SQLException {
+    void getAllRating() {
         ratingDao.insertRating(createRating(1, "First review", 1, 1, 5));
         ratingDao.insertRating(createRating(2, "Second review", 1, 2, 4));
         ratingDao.insertRating(createRating(3, "Third review", 2, 3, 3));
@@ -176,14 +174,10 @@ class RatingDaoImplTest {
     }
 
     @Test
-    void getAllRatingSQLException() {
-        try {
-            ratingDao.connection.prepareStatement("INVALID SQL").executeQuery();
-        } catch (SQLException e) {
-            // This is expected, ignore it for the test
-        }
+    void getAllRatingNoResult() {
+        List<Rating> ratings = ratingDao.getAllRating();
 
-        assertNotNull(logHandler.getLogContent());
+        assertEquals(0, ratings.size());
     }
 
     private Rating createRating(int id, String content, int productId, int userId, int stars) {
