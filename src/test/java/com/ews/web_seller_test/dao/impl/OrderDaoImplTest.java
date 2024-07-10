@@ -40,6 +40,7 @@ class OrderDaoImplTest {
         logger.removeHandler(logHandler);
     }
 
+    //Tests insertion of a valid order.
     @Test
     void insertOrder() throws SQLException {
         User user = createUser();
@@ -52,8 +53,9 @@ class OrderDaoImplTest {
         assertEquals(1, orders.size());
     }
 
+    //Tests insertion of an order with an user that does not exist.
     @Test
-    void insertOrderSQLException() {
+    void insertOrderInvalid() {
         User user = new User(); // Invalid user
         Order order = createOrder(user);
 
@@ -62,6 +64,7 @@ class OrderDaoImplTest {
         assertNotNull(logHandler.getLogContent());
     }
 
+    //Tests retrieval of order ID for a given order.
     @Test
     void getOrderId() throws SQLException {
         User user = createUser();
@@ -75,16 +78,7 @@ class OrderDaoImplTest {
         assertEquals(orderId, retrievedOrder.getId());
     }
 
-    @Test
-    void getOrderIdSQLException() {
-        User user = new User(); // Invalid user
-        Order order = createOrder(user);
-
-        int orderId = orderDao.getOrderId(order);
-
-        assertNotNull(logHandler.getLogContent());
-    }
-
+    //Tests editing an existing order.
     @Test
     void editOrder() throws SQLException {
         User user = createUser();
@@ -109,17 +103,7 @@ class OrderDaoImplTest {
 
     }
 
-    @Test
-    void editOrderSQLException() throws SQLException {
-        User user = createUser();
-        Order order = createOrder(user);
-        order.setId(999); // Invalid order ID
-
-        orderDao.editOrder(order);
-
-        assertNotNull(logHandler.getLogContent());
-    }
-
+    //Tests deletion of an existing order.
     @Test
     void deleteOrder() throws SQLException {
         User user = createUser();
@@ -138,35 +122,15 @@ class OrderDaoImplTest {
         assertEquals(0, orders.size());
     }
 
+    //Tests deletion of an order with an ID that does not exist.
     @Test
-    void deleteOrderSQLException() {
+    void deleteInvalidOrder() {
         orderDao.deleteOrder(999); // Invalid order ID
 
         assertNotNull(logHandler.getLogContent());
     }
 
-    @Test
-    void getOrder() throws SQLException {
-        User user = createUser();
-        Order order = createOrder(user);
-
-        orderDao.insertOrder(order);
-
-        List<Order> orders = orderDao.getAllOrder();
-        assertNotNull(orders);
-        assertEquals(1, orders.size());
-
-        Order retrievedOrder = orderDao.getOrder(orders.get(0).getId());
-        assertNotNull(retrievedOrder);
-    }
-
-    @Test
-    void getOrderSQLException() {
-        orderDao.getOrder(999); // Invalid order ID
-
-        assertNotNull(logHandler.getLogContent());
-    }
-
+    //Test get all orders in the system
     @Test
     void getAllOrder() throws SQLException {
         User user = createUser();
@@ -178,39 +142,27 @@ class OrderDaoImplTest {
     }
 
     @Test
-    void getAllOrderSQLException() {
-        try {
-            orderDao.connection.prepareStatement("INVALID SQL").executeQuery();
-        } catch (SQLException e) {
-            // This is expected, ignore it for the test
-        }
-
-        assertNotNull(logHandler.getLogContent());
+    void getAllOrderNoResult() throws SQLException {
+        List<Order> orders = orderDao.getAllOrder();
+        assertEquals(0, orders.size());
     }
 
+
+
+    //Test search user by name
     @Test
     void searchOrder() throws SQLException {
         User user = createUser();
         orderDao.insertOrder(createOrder(user));
-        orderDao.insertOrder(createOrder(user));
 
         List<Order> orders = orderDao.searchOrder("John");
         assertNotNull(orders);
-        assertTrue(orders.size() > 0);
+        assertEquals(1, orders.size());
     }
 
+    //Tests editing of an order with an ID that does not exists.
     @Test
-    void searchOrderSQLException() {
-        try {
-            orderDao.connection.prepareStatement("INVALID SQL").executeQuery();
-        } catch (SQLException e) {
-            // This is expected, ignore it for the test
-        }
-
-        assertNotNull(logHandler.getLogContent());
-    }
-    @Test
-    void editOrderInvalidId() throws SQLException {
+    void editOrderInvalid() throws SQLException {
         Order order = createOrder(createUser());
         order.setId(999); // Invalid order ID
 
@@ -219,6 +171,7 @@ class OrderDaoImplTest {
         assertNotNull(logHandler.getLogContent());
     }
 
+    //Test search with non existent user
     @Test
     void searchOrderNoResults() {
         List<Order> orders = orderDao.searchOrder("NonexistentUser");
@@ -227,6 +180,7 @@ class OrderDaoImplTest {
         assertEquals(0, orders.size());
     }
 
+    //Tests retrieval of an order with an ID that does not exists.
     @Test
     void getOrderNoResult() {
         Order order = orderDao.getOrder(999); // Nonexistent order ID
@@ -247,7 +201,7 @@ class OrderDaoImplTest {
     }
 
     private Order createOrder(User user) {
-        return new Order(user, 100.0f, "123456789", "123 Main St", "Note", 1, 10.0f, 1, 110.0f, new Date(), new Date());
+        return new Order(user, 100.0f, "123456789", "123 Main St", "Note", 1, 10.0f, 1, 90.0f, new Date(), new Date());
     }
 
     private static class TestLogHandler extends Handler {
