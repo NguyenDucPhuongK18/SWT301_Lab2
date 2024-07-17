@@ -62,6 +62,7 @@ class deleteOrder_Details_Test {
 
     @Test
     void deleteNonExistentOrder_Details() throws SQLException {
+        orderDetailsDao.getOrder_Details(9999);
         orderDetailsDao.deleteOrder_Details(9999);
 
         List<Order_Details> orderDetailsList = orderDetailsDao.orderDetailsListByOrderId(9999);
